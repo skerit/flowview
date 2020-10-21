@@ -1,0 +1,11 @@
+<div class="button-wrapper">
+	<button class="add-to-grid">+</button>
+</div>
+<div class="info-wrapper">
+	<span class="title">
+		{{ self.config.title }}
+	</span>
+	<span class="description">
+		{{ self.config.description }}
+	</span>
+</div>
