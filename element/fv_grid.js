@@ -3,18 +3,23 @@
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.1.0
- * @version  0.1.0
+ * @version  0.1.1
  */
-var Grid = Function.inherits('Hawkejs.Element.Flowview.Base', function Grid() {
-	Grid.super.call(this);
+const Grid = Function.inherits('Hawkejs.Element.Flowview.Base', 'Grid');
 
-	this.innerHTML = `
+/**
+ * The template to use for the content of this element
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ */
+ Grid.setTemplate(`
 <div class="fv-grid-inner">
 	<div class="nodes"></div>
 	<div class="arrows"></div>
 </div>
-`;
-});
+`, true);
 
 /**
  * The stylesheet to load for this element

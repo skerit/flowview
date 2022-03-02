@@ -3,12 +3,19 @@
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.1.0
- * @version  0.1.0
+ * @version  0.1.1
  */
-var Node = Function.inherits('Hawkejs.Element.Flowview.Base', function Node() {
-	Node.super.call(this);
+const Node = Function.inherits('Hawkejs.Element.Flowview.Base', 'Node');
 
-	this.innerHTML = `<div class="fv-node-content">
+/**
+ * The template to use for the content of this element
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ */
+Node.setTemplate(`
+<div class="fv-node-content">
 	<div class="fv-node-title">
 		Flowview Node
 	</div>
@@ -18,8 +25,8 @@ var Node = Function.inherits('Hawkejs.Element.Flowview.Base', function Node() {
 		<div class="fv-node-anchors-in"></div>
 		<div class="fv-node-anchors-out"></div>
 	</div>
-</div>`;
-});
+</div>
+`, true);
 
 /**
  * The type of this node
