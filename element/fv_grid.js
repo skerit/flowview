@@ -14,7 +14,7 @@ const Grid = Function.inherits('Hawkejs.Element.Flowview.Base', 'Grid');
  * @since    0.1.1
  * @version  0.1.1
  */
- Grid.setTemplate(`
+Grid.setTemplate(`
 <div class="fv-grid-inner">
 	<div class="nodes"></div>
 	<div class="arrows"></div>
@@ -191,16 +191,17 @@ Grid.setMethod(function introduced() {
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.1.0
- * @version  0.1.0
+ * @version  0.1.1
  */
 Grid.setMethod(function initRectListener() {
 
 	const that = this;
 
 	window.addEventListener('resize', refreshRect);
+	window.addEventListener('scroll', refreshRect);
 
 	function refreshRect() {
-		that.rect = that.getBoundingClientRect();
+		that.rect = null;
 	}
 
 	refreshRect();
@@ -211,12 +212,17 @@ Grid.setMethod(function initRectListener() {
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.1.0
- * @version  0.1.0
+ * @version  0.1.1
  */
 Grid.setMethod(function getRect() {
 
 	if (!this.rect) {
 		this.rect = this.getBoundingClientRect();
+
+		let pos_in_doc = this.getElementPosInDocument(this);
+
+		this.rect.page_x = pos_in_doc.x;
+		this.rect.page_y = pos_in_doc.y;
 	}
 
 	return this.rect;
@@ -273,7 +279,7 @@ Grid.setMethod(function addNode(config) {
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.1.0
- * @version  0.1.0
+ * @version  0.1.1
  */
 Grid.setMethod(function initDragEvents() {
 
@@ -320,12 +326,15 @@ Grid.setMethod(function initDragEvents() {
 		}
 
 		// Calculate the position of the mouseclick inside the target
+		// (2022-03-02: In this code it should actually use the position in
+		// the current *document*, so pageX/Y should be used. Should probably
+		// change this later)
 		if (e.type === 'touchstart' || e.type == 'touchmove') {
-			x = e.touches[0].clientX;
-			y = e.touches[0].clientY;
+			x = e.touches[0].pageX;
+			y = e.touches[0].pageY;
 		} else {
-			x = e.clientX;
-			y = e.clientY;
+			x = e.pageX;
+			y = e.pageY;
 		}
 
 		x /= scale;
@@ -337,8 +346,8 @@ Grid.setMethod(function initDragEvents() {
 			y         : y,
 
 			// Coordinates on the grid
-			grid_x    : x - grid_rect.x,
-			grid_y    : y - grid_rect.y,
+			grid_x    : x - grid_rect.page_x,
+			grid_y    : y - grid_rect.page_y,
 
 			// Change since the start
 			change_x  : null,
@@ -346,7 +355,7 @@ Grid.setMethod(function initDragEvents() {
 
 			// Coordinates inside the current element
 			inside_x  : null,
-			insidy_y  : null,
+			inside_y  : null,
 
 			// Coordinates of the active element's topleft corner
 			corner_x  : null,

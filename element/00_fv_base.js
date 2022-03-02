@@ -103,6 +103,31 @@ Base.setMethod(function getRectInGrid() {
 });
 
 /**
+ * Get the given's element position in the document
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ */
+Base.setMethod(function getElementPosInDocument(element) {
+
+	let curleft = 0,
+	    curtop = 0;
+	
+	if (element.offsetParent) {
+		do {
+			curleft += element.offsetLeft;
+			curtop += element.offsetTop;
+		} while (element = element.offsetParent);
+	}
+
+	return {
+		x: curleft,
+		y: curtop
+	};
+});
+
+/**
  * Move the element
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
