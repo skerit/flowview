@@ -42,7 +42,7 @@ ListEntry.setAssignedProperty('config');
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
  * @since    0.1.0
- * @version  0.1.0
+ * @version  0.1.1
  */
 ListEntry.setMethod(function introduced() {
 
@@ -53,7 +53,7 @@ ListEntry.setMethod(function introduced() {
 	add_button.addEventListener('click', function onClick(e) {
 		e.preventDefault();
 
-		let grid = document.querySelector('fv-grid');
+		let grid = that.grid;
 
 		if (grid) {
 			grid.addNode({type: that.type});

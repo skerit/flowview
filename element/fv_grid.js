@@ -222,7 +222,7 @@ Grid.setMethod(function getRect() {
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.1.0
- * @version  0.1.0
+ * @version  0.1.1
  */
 Grid.setMethod(function addNode(config) {
 
@@ -231,7 +231,7 @@ Grid.setMethod(function addNode(config) {
 	this.nodes.append(node);
 
 	// Get the list entry in order to get the node configuration
-	let list_entry = document.querySelector('fv-list-entry[type="' + config.type + '"]'),
+	let list_entry = this.queryClosest('fv-list-entry[type="' + config.type + '"]'),
 	    component_config;
 
 	if (list_entry) {

@@ -33,10 +33,10 @@ Base.setStatic('is_abstract_class', true, false);
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.1.0
- * @version  0.1.0
+ * @version  0.1.1
  */
 Base.setProperty(function grid() {
-	return this.queryParents('fv-grid');
+	return this.findClosestGrid();
 });
 
 /**
@@ -143,4 +143,35 @@ Base.setMethod(function moveTo(x, y) {
  */
 Base.setMethod(function createSvgElement(name) {
 	return document.createElementNS('http://www.w3.org/2000/svg', name);
+});
+
+/**
+ * Look for the closest element of its type
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ */
+Base.setMethod(function findClosestGrid() {
+	return this.queryClosest('fv-grid');
+});
+
+/**
+ * Look for the closest element of its type
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ */
+Base.setMethod(function queryClosest(query) {
+
+	let parent = this.parentElement,
+	    result;
+	
+	while (!result && parent) {
+		result = parent.querySelector(query);
+		parent = parent.parentElement;
+	}
+
+	return result;
 });
