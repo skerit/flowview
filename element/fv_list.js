@@ -59,14 +59,25 @@ List.setAttribute('src');
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
  * @since    0.1.0
- * @version  0.1.0
+ * @version  0.1.1
  *
  * @return   {Pledge}
  */
 List.setMethod(function loadRemote() {
 
-	let pledge = new Classes.Pledge(),
-	    url = this.src;
+	if (this.loading) {
+		return this.loading;
+	}
+
+	let url = this.src;
+
+	if (!url) {
+		return;
+	}
+
+	let pledge = new Classes.Pledge();
+	
+	this.loading = pledge;
 
 	if (!url) {
 		pledge.resolve(false);

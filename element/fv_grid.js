@@ -103,7 +103,7 @@ Grid.setAttribute('scale', function getScale(scale) {
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.1.0
- * @version  0.1.0
+ * @version  0.1.1
  */
 Grid.setProperty(function value() {
 
@@ -124,6 +124,11 @@ Grid.setProperty(function value() {
 	return result;
 
 }, function setValue(value) {
+
+	if (Blast.isNode) {
+		this.assigned_data.value = value;
+		return;
+	}
 
 	this.clear();
 
@@ -179,9 +184,14 @@ Grid.setMethod(function clear() {
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.1.0
- * @version  0.1.0
+ * @version  0.1.1
  */
 Grid.setMethod(function introduced() {
+
+	if (this.assigned_data.value) {
+		this.value = this.assigned_data.value;
+	}
+
 	this.initDragEvents();
 	this.initRectListener();
 });
@@ -235,7 +245,16 @@ Grid.setMethod(function getRect() {
  * @since    0.1.0
  * @version  0.1.1
  */
-Grid.setMethod(function addNode(config) {
+Grid.setMethod(async function addNode(config) {
+
+	let list = this.queryClosest('fv-list');
+
+	if (list && list.loading) {
+		await list.loading;
+	} else if (Blast.isBrowser && list) {
+		list.loadRemote();
+		await list.loading;
+	}
 
 	let node = this.createElement('fv-node');
 

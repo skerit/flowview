@@ -130,7 +130,7 @@ Node.setProperty(function anchors_in() {
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.1.0
- * @version  0.1.0
+ * @version  0.1.1
  */
 Node.setProperty(function value() {
 
@@ -189,11 +189,29 @@ Node.setProperty(function value() {
 
 }, function setValue(config) {
 
-	if (!this.parentElement || !document.body.contains(this)) {
-		throw new Error('Unable to set the value of a node that is not in the document');
+	this.assigned_data.config = config;
+
+	if (Blast.isNode) {
+		return;
 	}
 
-	this.assigned_data.config = config;
+	this.loadConfig(config);
+});
+
+/**
+ * Load the config
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.0
+ * @version  0.1.1
+ *
+ * @param    {String}   name
+ */
+Node.setMethod(async function loadConfig(config) {
+
+	if (!this.parentElement) {
+		throw new Error('Unable to set the value of a node that is not in the document');
+	}
 
 	if (config.pos) {
 		this.moveTo(config.pos);
@@ -343,7 +361,6 @@ Node.setProperty(function value() {
 			source_anchor.connectTo(target_anchor);
 		}
 	}
-
 });
 
 /**
