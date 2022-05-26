@@ -77,11 +77,10 @@ Grid.setAttribute('grid-id');
 
 /**
  * Listen for scale changes
- * @TODO: Make scaling work
  *
  * @author   Jelle De Loecker <jelle@develry.be>
  * @since    0.1.0
- * @version  0.1.0
+ * @version  0.1.1
  */
 Grid.setAttribute('scale', function getScale(scale) {
 
@@ -101,16 +100,69 @@ Grid.setAttribute('scale', function getScale(scale) {
 		scale = 1;
 	}
 
-	this.nodes.style.setProperty('transform', 'scale(' + scale + ')');
-
-	// Don't scale the arrows like this, svg does not like it
-	//this.arrows.style.setProperty('transform', 'scale(' + scale + ')');
-
-	Blast.nextTick(() => {
-		this.redraw();
-	});
+	this.queueRedraw();
 
 	return scale;
+});
+
+/**
+ * Listen for translate changes
+ *
+ * @author   Jelle De Loecker <jelle@develry.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ */
+Grid.setAttribute('translate-x', function getTranslateX(x) {
+
+	x = parseFloat(x);
+
+	if (!isFinite(x)) {
+		x = 0;
+	}
+
+	return x;
+
+}, function setTranslateX(x) {
+
+	x = parseFloat(x);
+
+	if (!isFinite(x)) {
+		x = 0;
+	}
+
+	this.queueRedraw();
+
+	return x;
+});
+
+/**
+ * Listen for translate changes
+ *
+ * @author   Jelle De Loecker <jelle@develry.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ */
+Grid.setAttribute('translate-y', function getTranslateY(y) {
+
+	y = parseFloat(y);
+
+	if (!isFinite(y)) {
+		y = 0;
+	}
+
+	return y;
+
+}, function setTranslateY(y) {
+
+	y = parseFloat(y);
+
+	if (!isFinite(y)) {
+		y = 0;
+	}
+
+	this.queueRedraw();
+
+	return y;
 });
 
 /**
@@ -163,6 +215,24 @@ Grid.setProperty(function value() {
 });
 
 /**
+ * Queue a redraw
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ */
+Grid.setMethod(function queueRedraw() {
+
+	if (this._redraw_id) {
+		cancelAnimationFrame(this._redraw_id);
+	}
+
+	this._redraw_id = requestAnimationFrame(() => {
+		this.redraw();
+	})
+});
+
+/**
  * Redraw everything
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
@@ -170,6 +240,26 @@ Grid.setProperty(function value() {
  * @version  0.1.1
  */
 Grid.setMethod(function redraw() {
+
+	let scale = this.scale,
+	    pan_x = this.translate_x || 0,
+		pan_y = this.translate_y || 0;
+	
+	let transform = '';
+
+	if (scale) {
+		transform += 'scale(' + scale + ')';
+	}
+
+	if (pan_x || pan_y) {
+		if (transform) {
+			transform += ' ';
+		}
+
+		transform += 'translate(' + pan_x + 'px, ' + pan_y + 'px)';
+	}
+
+	this.nodes.style.setProperty('transform', transform);
 
 	let fv_nodes = this.all_fv_nodes;
 
@@ -375,6 +465,18 @@ Grid.setMethod(function getListEntry(type) {
 });
 
 /**
+ * Move the grid contents
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.0
+ * @version  0.1.1
+ */
+Grid.setMethod(function moveTo(x, y) {
+	this.translate_x = x;
+	this.translate_y = y;
+});
+
+/**
  * Add a node to the grid
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
@@ -431,6 +533,10 @@ Grid.setMethod(async function addNode(config) {
 	if (component_config && component_config.title) {
 		node.title_element.textContent = component_config.title;
 	}
+
+	if (node.unscaled_top == null) {
+		node.moveTo(0 - this.translate_x, 0 - this.translate_y);
+	}
 });
 
 /**
@@ -466,6 +572,8 @@ Grid.setMethod(function initDragEvents() {
 
 	let x_offset = 0,
 	    y_offset = 0;
+	
+	let panning = false;
 
 	/**
 	 * Get cursor coordinates
@@ -536,6 +644,11 @@ Grid.setMethod(function initDragEvents() {
 			let left = element.unscaled_left,
 			    top = element.unscaled_top;
 			
+			if (panning && element == that) {
+				left = that.translate_x;
+				top = that.translate_y;
+			}
+			
 			if (left != null) {
 				result.corner_x = left;
 			} else {
@@ -547,14 +660,9 @@ Grid.setMethod(function initDragEvents() {
 			} else {
 				result.corner_y = rect.y - grid_rect.y;
 			}
-			
-			// result.corner_x = rect.x - grid_rect.x;
-			// result.corner_y = rect.y - grid_rect.y;
 
 			result.inside_x = result.x - rect.x;
 			result.inside_y = result.y - rect.y;
-
-			console.log('R:', result);
 		}
 
 		return result;
@@ -570,7 +678,12 @@ Grid.setMethod(function initDragEvents() {
 
 		let pos = getCursorPosition(e);
 
-		active = getDraggable(e, pos);
+		if (e.ctrlKey) {
+			panning = true;
+			active = this;
+		} else {
+			active = getDraggable(e, pos);
+		}
 
 		if (!active) {
 			return;
@@ -603,6 +716,7 @@ Grid.setMethod(function initDragEvents() {
 			active.dragEnd(pos);
 		}
 
+		panning = false;
 		active = false;
 		start_pos = null;
 	}
