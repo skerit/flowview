@@ -3,9 +3,9 @@
 </div>
 <div class="info-wrapper">
 	<span class="title">
-		{{ self.config.title }}
+		{{ self.component_title }}
 	</span>
 	<span class="description">
-		{{ self.config.description }}
+		{{ self.description }}
 	</span>
 </div>

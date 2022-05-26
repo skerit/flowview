@@ -233,6 +233,27 @@ Node.setMethod(async function loadConfig(config) {
 		this.title_element.textContent = title;
 	}
 
+	if (this.type) {
+		let list_entry = this.grid.getListEntry(this.type);
+		this.list_entry = list_entry;
+	} else {
+		this.list_entry = null;
+	}
+
+	if (this.list_entry && this.list_entry.config) {
+		if (this.list_entry.config.class) {
+			let constructor = Object.path(Blast.Classes, this.list_entry.config.class);
+
+			if (constructor) {
+				this.handler = new constructor(this, config);
+
+				if (this.handler.handles_node_loading) {
+					return;
+				}
+			}
+		}
+	}
+
 	let output,
 	    input,
 	    conn;
@@ -249,118 +270,175 @@ Node.setMethod(async function loadConfig(config) {
 		}
 	}
 
-	Hawkejs.removeChildren(this.buttons_element);
-
-	if (config.buttons && config.buttons.length) {
-		const that = this;
-		let entry;
-
-		for (entry of config.buttons) {
-
-			let button_type;
-
-			if (entry.href) {
-				button_type = 'a';
-			} else {
-				button_type = 'button';
-			}
-
-			let button = this.createElement(button_type);
-			button.classList.add('btn');
-			button.classList.add('btn-primary');
-			button.textContent = entry.title || entry.name;
-			button.setAttribute('data-name', entry.name);
-
-			if (entry.call) {
-				button.addEventListener('click', function onClick(e) {
-					e.preventDefault();
-
-					let method = Object.path(Blast.Globals, entry.call);
-
-					if (method) {
-						method.call(null, that);
-					}
-				});
-			}
-
-			if (entry.href) {
-
-				let url = RURL.parse(entry.href);
-
-				if (this.type) {
-					url.param('type', this.type);
-				}
-
-				if (this.uid) {
-					url.param('node_uid', this.uid);
-				}
-
-				if (this.grid.grid_id) {
-					url.param('grid_id', this.grid.grid_id);
-				}
-
-				button.setAttribute('href', ''+url);
-			}
-
-			this.buttons_element.append(button);
-		}
-	}
+	this.loadButtons(config.buttons);
 
 	let connections = config.connections || false;
 
 	if (connections.in && connections.in.length) {
-		for (conn of connections.in) {
-
-			let node = this.grid.getNodeByUid(conn.source.node_uid);
-
-			if (!node) {
-				console.warn('Connection source "' + conn.source.node_uid + '" was not found');
-				continue;
-			}
-
-			let source_anchor = node.getAnchorByName(conn.source.anchor_name),
-			    target_anchor = this.getAnchorByName(conn.target.anchor_name);
-
-			if (!source_anchor) {
-				console.warn('Failed to find source anchor "' + conn.source.anchor_name + '"');
-				continue;
-			}
-
-			if (!target_anchor) {
-				console.warn('Failed to find target anchor "' + conn.target.anchor_name + '"');
-				continue;
-			}
-
-			source_anchor.connectTo(target_anchor);
-		}
+		this.loadIncomingConnections(connections.in);
 	}
 
 	if (connections.out && connections.out.length) {
-		for (conn of connections.out) {
-
-			let node = this.grid.getNodeByUid(conn.target.node_uid);
-
-			if (!node) {
-				console.warn('Connection target "' + conn.target.node_uid + '" was not found');
-				continue;
-			}
-
-			let source_anchor = this.getAnchorByName(conn.source.anchor_name),
-			    target_anchor = node.getAnchorByName(conn.target.anchor_name);
-
-			if (!source_anchor) {
-				console.warn('Failed to find source anchor "' + conn.source.anchor_name + '"');
-				continue;
-			}
-
-			if (!target_anchor) {
-				console.warn('Failed to find target anchor "' + conn.target.anchor_name + '"');
-				continue;
-			}
-
-			source_anchor.connectTo(target_anchor);
-		}
+		this.loadOutgoingConnections(connections.out);
 	}
+});
+
+/**
+ * Show buttons
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.3.0
+ * @version  0.3.0
+ *
+ * @param    {Object[]}   buttons
+ */
+Node.setMethod(function loadButtons(buttons) {
+
+	Hawkejs.removeChildren(this.buttons_element);
+
+	if (!buttons || !buttons.length) {
+		return;
+	}
+
+	const that = this;
+	let entry;
+
+	for (entry of buttons) {
+
+		let button_type;
+
+		if (entry.href) {
+			button_type = 'a';
+		} else {
+			button_type = 'button';
+		}
+
+		let button = this.createElement(button_type);
+		button.classList.add('btn');
+		button.classList.add('btn-primary');
+		button.textContent = entry.title || entry.name;
+		button.setAttribute('data-name', entry.name);
+
+		if (entry.call) {
+			button.addEventListener('click', function onClick(e) {
+				e.preventDefault();
+
+				let method = Object.path(Blast.Globals, entry.call);
+
+				if (method) {
+					method.call(null, that);
+				}
+			});
+		}
+
+		if (entry.href) {
+
+			let url = RURL.parse(entry.href);
+
+			if (this.type) {
+				url.param('type', this.type);
+			}
+
+			if (this.uid) {
+				url.param('node_uid', this.uid);
+			}
+
+			if (this.grid.grid_id) {
+				url.param('grid_id', this.grid.grid_id);
+			}
+
+			button.setAttribute('href', ''+url);
+		}
+
+		this.buttons_element.append(button);
+	}
+});
+
+/**
+ * Load incoming connections
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.3.0
+ * @version  0.3.0
+ *
+ * @param    {Object[]}   connections
+ */
+Node.setMethod(function loadIncomingConnections(connections) {
+
+	if (!connections) {
+		return;
+	}
+
+	for (let connection of connections) {
+		let source_node = this.grid.getNodeByUid(connection.source.node_uid);
+
+		if (!source_node) {
+			console.warn('Connection source "' + connection.source.node_uid + '" was not found');
+			continue;
+		}
+
+		this._applyConnectionToNode(source_node, this, connection);
+	}
+});
+
+/**
+ * Load outgoing connections
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.3.0
+ * @version  0.3.0
+ *
+ * @param    {Object[]}   connections
+ */
+Node.setMethod(function loadOutgoingConnections(connections) {
+
+	if (!connections) {
+		return;
+	}
+
+	for (let connection of connections) {
+		let target_node = this.grid.getNodeByUid(connection.target.node_uid);
+
+		if (!target_node) {
+			console.warn('Connection target "' + connection.target.node_uid + '" was not found');
+			continue;
+		}
+
+		this._applyConnectionToNode(this, target_node, connection);
+	}
+});
+
+/**
+ * Connect the actual nodes
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.0
+ * @version  0.1.0
+ *
+ * @param    {FvNode}   source_node
+ * @param    {FvNode}   target_node
+ * @param    {Object}   connection
+ *
+ * @return   {Boolean}
+ */
+Node.setMethod(function _applyConnectionToNode(source_node, target_node, connection) {
+
+	let source_anchor = source_node.getAnchorByName(connection.source.anchor_name),
+		target_anchor = target_node.getAnchorByName(connection.target.anchor_name);
+
+	if (!source_anchor) {
+		console.warn('Failed to find source anchor "' + connection.source.anchor_name + '"');
+		return false;
+	}
+
+	if (!target_anchor) {
+		console.warn('Failed to find target anchor "' + connection.target.anchor_name + '"');
+		return false;
+	}
+
+	source_anchor.connectTo(target_anchor);
+
+	return true;
 });
 
 /**

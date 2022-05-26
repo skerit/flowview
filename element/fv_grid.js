@@ -238,6 +238,19 @@ Grid.setMethod(function getRect() {
 	return this.rect;
 });
 
+
+/**
+ * Get a fv-list-entry by type
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.0
+ * @version  0.1.1
+ */
+Grid.setMethod(function getListEntry(type) {
+	let list_entry = this.queryClosest('fv-list-entry[type="' + type + '"]');
+	return list_entry;
+});
+
 /**
  * Add a node to the grid
  *
@@ -261,7 +274,7 @@ Grid.setMethod(async function addNode(config) {
 	this.nodes.append(node);
 
 	// Get the list entry in order to get the node configuration
-	let list_entry = this.queryClosest('fv-list-entry[type="' + config.type + '"]'),
+	let list_entry = this.getListEntry(config.type),
 	    component_config;
 
 	if (list_entry) {
@@ -283,6 +296,10 @@ Grid.setMethod(async function addNode(config) {
 
 		if (!config.schema) {
 			config.schema = component_config.schema;
+		}
+
+		if (!config.class) {
+			config.class = component_config.class;
 		}
 	}
 

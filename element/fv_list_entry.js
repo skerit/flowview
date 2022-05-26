@@ -38,6 +38,38 @@ ListEntry.setAttribute('type');
 ListEntry.setAssignedProperty('config');
 
 /**
+ * Get the title of this entry
+ *
+ * @author   Jelle De Loecker <jelle@elevenways.be>
+ * @since    0.1.0
+ * @version  0.1.1
+ */
+ListEntry.setProperty(function component_title() {
+
+	if (this.config && this.config.title) {
+		return this.config.title;
+	}
+
+	return this.type;
+});
+
+/**
+ * Get the description of this entry
+ *
+ * @author   Jelle De Loecker <jelle@elevenways.be>
+ * @since    0.1.0
+ * @version  0.1.1
+ */
+ListEntry.setProperty(function description() {
+
+	if (this.config && this.config.description) {
+		return this.config.description;
+	}
+
+	return '';
+});
+
+/**
  * Added to the dom for the first time
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>

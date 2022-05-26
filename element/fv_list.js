@@ -14,7 +14,7 @@ var List = Function.inherits('Hawkejs.Element.Flowview.Base', function List() {
 });
 
 /**
- * The data of this entry
+ * The data of all available components
  *
  * @author   Jelle De Loecker <jelle@elevenways.be>
  * @since    0.2.0
@@ -120,7 +120,7 @@ List.setMethod(function addComponent(data) {
 
 	let entry = this.createElement('fv-list-entry');
 
-	entry.type = data.name;
+	entry.type = data.type || data.name;
 	entry.config = data;
 
 	this.components_element.append(entry);
