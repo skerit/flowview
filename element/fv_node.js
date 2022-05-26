@@ -126,6 +126,32 @@ Node.setProperty(function anchors_in() {
 });
 
 /**
+ * Get the unscaled left
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.0
+ * @version  0.1.1
+ */
+Node.setProperty(function unscaled_left() {
+	if (this.style.left) {
+		return parseFloat(this.style.left);
+	}
+});
+
+/**
+ * Get the unscaled left
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.0
+ * @version  0.1.1
+ */
+Node.setProperty(function unscaled_top() {
+	if (this.style.top) {
+		return parseFloat(this.style.top);
+	}
+});
+
+/**
  * Get/set the value
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
@@ -152,8 +178,19 @@ Node.setProperty(function value() {
 
 	let rect = this.getRectInGrid();
 
-	result.pos.x = rect.x;
-	result.pos.y = rect.y;
+	let x = this.unscaled_left,
+	    y = this.unscaled_top;
+	
+	if (x == null) {
+		x = rect.x;
+	}
+
+	if (y == null) {
+		y = rect.y;
+	}
+
+	result.pos.x = x;
+	result.pos.y = y;
 
 	let anchor,
 	    temp,

@@ -65,7 +65,7 @@ Path.setMethod(function showCircle(show) {
 	if (!this.svg_circle) {
 		this.svg_circle = this.createSvgElement('circle');
 		this.svg_circle.classList.add('handle');
-		this.svg_circle.setAttribute('r', 5);
+		this.svg_circle.setAttribute('r', this.grid.applyScale(5));
 		this.svg.append(this.svg_circle);
 	}
 
@@ -198,6 +198,17 @@ Path.setMethod(function redraw() {
 		return;
 	}
 
-	let path = 'M' + this.sx + ',' + this.sy + ' ' + this.dx + ',' + this.dy;
+	this.style.strokeWidth = this.grid.applyScale(4);
+
+	if (this.svg_circle) {
+		this.svg_circle.setAttribute('r', this.grid.applyScale(5));
+	}
+
+	let sx = this.sx,
+	    sy = this.sy,
+		dx = this.dx,
+		dy = this.dy;
+	
+	let path = 'M' + sx + ',' + sy + ' ' + dx + ',' + dy;
 	this.svg_path.setAttribute('d', path);
 });

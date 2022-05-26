@@ -49,6 +49,15 @@ Grid.addElementGetter('inner_grid', 'div.fv-grid-inner');
 Grid.addElementGetter('nodes', 'div.nodes');
 
 /**
+ * All fv-node elements
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.0
+ * @version  0.1.0
+ */
+Grid.addElementsGetter('all_fv_nodes', 'div.nodes fv-node');
+
+/**
  * Arrow paths svg
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
@@ -93,7 +102,13 @@ Grid.setAttribute('scale', function getScale(scale) {
 	}
 
 	this.nodes.style.setProperty('transform', 'scale(' + scale + ')');
-	this.arrows.style.setProperty('transform', 'scale(' + scale + ')');
+
+	// Don't scale the arrows like this, svg does not like it
+	//this.arrows.style.setProperty('transform', 'scale(' + scale + ')');
+
+	Blast.nextTick(() => {
+		this.redraw();
+	});
 
 	return scale;
 });
@@ -143,6 +158,25 @@ Grid.setProperty(function value() {
 		node_config = value[i];
 
 		this.addNode(node_config);
+	}
+
+});
+
+/**
+ * Redraw everything
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ */
+Grid.setMethod(function redraw() {
+
+	let fv_nodes = this.all_fv_nodes;
+
+	if (fv_nodes && fv_nodes.length) {
+		for (let i = 0; i < fv_nodes.length; i++) {
+			fv_nodes[i].redraw();
+		}
 	}
 
 });
@@ -218,7 +252,8 @@ Grid.setMethod(function initRectListener() {
 });
 
 /**
- * Get the cached rect
+ * Get the cached rect of this grid
+ * (The scale has no effect on this)
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.1.0
@@ -238,6 +273,94 @@ Grid.setMethod(function getRect() {
 	return this.rect;
 });
 
+/**
+ * Apply the scale
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ */
+Grid.setMethod(function applyScale(value) {
+	return value * this.scale;
+});
+
+/**
+ * Get the scaled X value
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ */
+Grid.setMethod(function scaleX(x) {
+	return x * this.scale;
+});
+
+/**
+ * Get the scaled Y value
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ */
+Grid.setMethod(function scaleY(y) {
+	return y * this.scale;
+});
+
+/**
+ * Get the translated X value
+ * (This scale version is not used yet)
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ */
+Grid.setMethod(function translateX(x) {
+
+	if (this.scale == 1) {
+		return x;
+	}
+
+	// Get the measure of this element
+	let rect = this.getRect();
+
+	// Calculate how big it virtually is with the scaling
+	let width = rect.width / this.scale;
+
+	// See how much wider it has gotten
+	let extra_width = 0 - ((width - rect.width) / 2);
+
+	let result = extra_width + x;
+
+	return result;
+});
+
+/**
+ * Get the translated Y value
+ * (This scale version is not used yet)
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ */
+Grid.setMethod(function translateY(y) {
+
+	if (this.scale == 1) {
+		return y;
+	}
+
+	// Get the measure of this element
+	let rect = this.getRect();
+
+	// Calculate how big it virtually is with the scaling
+	let height = rect.height / this.scale;
+
+	// See how much wider it has gotten
+	let extra_height = 0 - ((height - rect.height) / 2);
+
+	let result = extra_height + y;
+
+	return result;
+});
 
 /**
  * Get a fv-list-entry by type
@@ -373,9 +496,6 @@ Grid.setMethod(function initDragEvents() {
 			y = e.pageY;
 		}
 
-		x /= scale;
-		y /= scale;
-
 		let result = {
 			// Absolute coordinates on the page
 			x         : x,
@@ -405,19 +525,36 @@ Grid.setMethod(function initDragEvents() {
 		};
 
 		if (start_pos) {
-			result.change_x = result.x - start_pos.x;
-			result.change_y = result.y - start_pos.y;
+			result.change_x = (result.x - start_pos.x) / scale;
+			result.change_y = (result.y - start_pos.y) / scale;
 			result.start_pos = start_pos;
 		}
 
 		if (element) {
 			let rect = element.getBoundingClientRect();
 
-			result.corner_x = rect.x - grid_rect.x;
-			result.corner_y = rect.y - grid_rect.y;
+			let left = element.unscaled_left,
+			    top = element.unscaled_top;
+			
+			if (left != null) {
+				result.corner_x = left;
+			} else {
+				result.corner_x = rect.x - grid_rect.x;
+			}
+
+			if (top != null) {
+				result.corner_y = top;
+			} else {
+				result.corner_y = rect.y - grid_rect.y;
+			}
+			
+			// result.corner_x = rect.x - grid_rect.x;
+			// result.corner_y = rect.y - grid_rect.y;
 
 			result.inside_x = result.x - rect.x;
 			result.inside_y = result.y - rect.y;
+
+			console.log('R:', result);
 		}
 
 		return result;
@@ -600,5 +737,33 @@ Grid.setMethod(function initDragEvents() {
 		}
 
 	}, false);
+
+	// Zoom in/out when using scroll wheel + control
+	this.addEventListener('wheel', e => {
+
+		if (!e.ctrlKey) {
+			return;
+		}
+
+		let direction = 1;
+
+		if (e.deltaY > 0) {
+			direction = -1;
+		}
+
+		e.preventDefault();
+
+		let scale = this.scale;
+
+		if (scale > 0) {
+			scale += (0.05 * direction);
+		}
+
+		if (scale < 0.1) {
+			scale = 0.1;
+		}
+
+		this.scale = scale;
+	});
 
 });

@@ -158,8 +158,6 @@ AnchorInput.setMethod(function dragStart(pos) {
 	// Clear the anchor target (and remove the anchor_target)
 	path.setAnchorTarget(false);
 
-	console.log('Dragstart?', path, pos);
-
 	return path;
 });
 
@@ -184,7 +182,6 @@ AnchorInput.setMethod(function redraw() {
 		path.dy = rect.y;
 		path.redraw();
 	}
-
 });
 
 /**
