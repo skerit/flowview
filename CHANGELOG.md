@@ -1,4 +1,4 @@
-## 0.1.1 (WIP)
+## 0.1.1 (2022-05-31)
 
 * Make the `grid` property return the closest `fv-grid` element, not just a parent one
 * Do not set CustomElement contents in the constructor
