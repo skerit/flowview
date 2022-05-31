@@ -95,6 +95,35 @@ Anchor.setProperty(function value() {
 });
 
 /**
+ * Get the existing link to the given anchor
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ *
+ * @param    {FvAnchor}   anchor
+ */
+Anchor.setMethod(function getExistingPathTo(anchor) {
+
+	if (!anchor) {
+		return null;
+	}
+
+	let path;
+
+	for (path of this.paths) {
+
+		if (!path) {
+			continue;
+		}
+
+		if (path.isConnectedTo(this, anchor)) {
+			return path;
+		}
+	}
+});
+
+/**
  * Connect this anchor to the given one
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
@@ -119,6 +148,13 @@ Anchor.setMethod(function connectTo(anchor) {
 		return false;
 	}
 
+	let fv_path = this.getExistingPathTo(anchor);
+
+	// If this is already connected to the anchor, return the existing path
+	if (fv_path) {
+		return fv_path;
+	}
+
 	let output,
 	    input;
 
@@ -130,7 +166,7 @@ Anchor.setMethod(function connectTo(anchor) {
 		output = anchor;
 	}
 
-	let fv_path = output.createPath();
+	fv_path = output.createPath();
 
 	fv_path.setAnchorTarget(input);
 	input.paths.push(fv_path);
@@ -191,6 +227,48 @@ Anchor.setMethod(function getAttachmentPoint() {
 	}
 
 	return result;
+});
+
+/**
+ * Remove the given path
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ */
+Anchor.setMethod(function removePath(path) {
+
+	if (!path) {
+		return;
+	}
+
+	this.paths.clean(path);
+});
+
+/**
+ * Detach the paths
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ */
+Anchor.setMethod(function detachPaths() {
+	while (this.paths.length) {
+		let path = this.paths.shift();
+		path.destroy();
+	}
+});
+
+/**
+ * Destroy this anchor
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ */
+Anchor.setMethod(function destroy() {
+	this.detachPaths();
+	this.remove();
 });
 
 /**
