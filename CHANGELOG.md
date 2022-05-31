@@ -1,4 +1,4 @@
-## 0.1.1
+## 0.1.1 (WIP)
 
 * Make the `grid` property return the closest `fv-grid` element, not just a parent one
 * Do not set CustomElement contents in the constructor
@@ -6,6 +6,7 @@
 * Wait until `fv-list` has loaded before adding nodes
 * Finally get scaling working
 * Add translation (panning) support too
+* Add `FvPath#destroy()` method
 
 ## 0.1.0
 

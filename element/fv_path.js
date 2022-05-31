@@ -5,9 +5,7 @@
  * @since    0.1.0
  * @version  0.1.0
  */
-var Path = Function.inherits('Hawkejs.Element.Flowview.Base', function Path() {
-	Path.super.call(this);
-});
+const Path = Function.inherits('Hawkejs.Element.Flowview.Base', 'Path');
 
 /**
  * Make this node draggable by default
@@ -165,6 +163,8 @@ Path.setMethod(function dragEnd(pos) {
 	if (this.over_element) {
 		this.over_element.dragDrop(pos, this);
 		this.over_element = null;
+	} else {
+		this.destroy();
 	}
 });
 
@@ -211,4 +211,25 @@ Path.setMethod(function redraw() {
 	
 	let path = 'M' + sx + ',' + sy + ' ' + dx + ',' + dy;
 	this.svg_path.setAttribute('d', path);
+});
+
+/**
+ * Delete this path
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ */
+Path.setMethod(function destroy() {
+
+	if (this.anchor_source) {
+		this.anchor_source.removePath(this);
+	}
+
+	if (this.anchor_target) {
+		this.anchor_target.removePath(this);
+	}
+
+	this.svg_path.remove();
+	this.remove();
 });
