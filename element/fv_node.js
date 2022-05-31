@@ -568,7 +568,7 @@ Node.setMethod(function redraw() {
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.1.0
- * @version  0.1.0
+ * @version  0.1.1
  */
 Node.setMethod(function introduced() {
 
@@ -576,6 +576,16 @@ Node.setMethod(function introduced() {
 		this.uid = Blast.createObjectId();
 	}
 
+	this.addEventListener('contextmenu', e => {
+
+		let menu = this.createElement('he-context-menu');
+		menu.addEntry('Delete', click_event => {
+			this.destroy();
+		});
+
+		menu.show(e);
+	});
+});
 
 /**
  * Destroy this node, detach all paths and queue a redraw

@@ -10,6 +10,7 @@
 * Add `FvPath#isConnectedTo(anchor_one, anchor_two)`
 * Make it possible to destroy anchors on the fly
 * Add `FvNode#destroy()` method
+* Add context-menu to `<fv-node>` elements where `delete` can be chosen
 
 ## 0.1.0
 
