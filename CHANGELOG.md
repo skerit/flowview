@@ -9,6 +9,7 @@
 * Add `FvPath#destroy()` method
 * Add `FvPath#isConnectedTo(anchor_one, anchor_two)`
 * Make it possible to destroy anchors on the fly
+* Add `FvNode#destroy()` method
 
 ## 0.1.0
 

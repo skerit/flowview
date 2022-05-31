@@ -576,4 +576,31 @@ Node.setMethod(function introduced() {
 		this.uid = Blast.createObjectId();
 	}
 
+
+/**
+ * Destroy this node, detach all paths and queue a redraw
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ */
+Node.setMethod(function destroy() {
+
+	let i;
+
+	for (i = 0; i < this.anchors_out.children.length; i++) {
+		this.anchors_out.children[i].detachPaths();
+	}
+
+	for (i = 0; i < this.anchors_in.children.length; i++) {
+		this.anchors_in.children[i].detachPaths();
+	}
+
+	const grid = this.grid;
+
+	this.remove();
+
+	if (grid) {
+		grid.queueRedraw();
+	}
 });
