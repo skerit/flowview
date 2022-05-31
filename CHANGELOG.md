@@ -7,6 +7,7 @@
 * Finally get scaling working
 * Add translation (panning) support too
 * Add `FvPath#destroy()` method
+* Add `FvPath#isConnectedTo(anchor_one, anchor_two)`
 
 ## 0.1.0
 

@@ -117,6 +117,33 @@ Path.setMethod(function setAnchorTarget(input) {
 });
 
 /**
+ * Is this path connected to the given anchors?
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ *
+ * @param    {FvAnchor}   anchor_one
+ * @param    {FvAnchor}   anchor_two
+ */
+Path.setMethod(function isConnectedTo(anchor_one, anchor_two) {
+
+	if (!anchor_one && !anchor_two) {
+		return false;
+	}
+
+	let connected_to_anchor_one = this.anchor_source == anchor_one || this.anchor_target == anchor_one;
+
+	if (arguments.length == 1) {
+		return connected_to_anchor_one;
+	}
+
+	let connected_to_anchor_two = this.anchor_source == anchor_two || this.anchor_target == anchor_two;
+
+	return connected_to_anchor_one && connected_to_anchor_two;
+});
+
+/**
  * Set the arrow target
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
