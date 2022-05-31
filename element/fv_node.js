@@ -270,6 +270,10 @@ Node.setMethod(async function loadConfig(config) {
 		this.title_element.textContent = title;
 	}
 
+	if (!this.grid) {
+		await this.waitForTasks();
+	}
+
 	if (this.type) {
 		let list_entry = this.grid.getListEntry(this.type);
 		this.list_entry = list_entry;
@@ -540,6 +544,60 @@ Node.setMethod(function addInput(config) {
 	anchor.textContent = title;
 
 	this.anchors_in.append(anchor);
+});
+
+/**
+ * Get an output anchor
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ */
+Node.setMethod(function getOutput(name) {
+	return this.anchors_out.querySelector('fv-anchor-output[name="' + name + '"]');
+});
+
+/**
+ * Get an input anchor
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ */
+Node.setMethod(function getInput(name) {
+	return this.anchors_in.querySelector('fv-anchor-input[name="' + name + '"]');
+});
+
+/**
+ * Remove an output
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ */
+Node.setMethod(function removeOutput(name) {
+
+	let anchor = this.getOutput(name);
+
+	if (anchor) {
+		anchor.destroy();
+	}
+});
+
+/**
+ * Remove an input
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.1
+ * @version  0.1.1
+ */
+Node.setMethod(function removeInput(name) {
+
+	let anchor = this.getInput(name);
+
+	if (anchor) {
+		anchor.destroy();
+	}
 });
 
 /**

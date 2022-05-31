@@ -11,6 +11,7 @@
 * Make it possible to destroy anchors on the fly
 * Add `FvNode#destroy()` method
 * Add context-menu to `<fv-node>` elements where `delete` can be chosen
+* Add methods to handle anchors of an `<fv-node>`
 
 ## 0.1.0
 
