@@ -544,7 +544,7 @@ Grid.setMethod(async function addNode(config) {
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.1.0
- * @version  0.1.1
+ * @version  0.1.2
  */
 Grid.setMethod(function initDragEvents() {
 
@@ -764,7 +764,7 @@ Grid.setMethod(function initDragEvents() {
 					// the current element
 					pos = getCursorPosition(event, target);
 
-					return target.dragStart(pos);
+					return target.dragStart(pos, event);
 				}
 
 				return target;

@@ -1,3 +1,7 @@
+## 0.1.2 (WIP)
+
+* Stop nodes being draggably by their "buttons" contents
+
 ## 0.1.1 (2022-05-31)
 
 * Make the `grid` property return the closest `fv-grid` element, not just a parent one

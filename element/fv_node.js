@@ -396,6 +396,27 @@ Node.setMethod(function loadButtons(buttons) {
 });
 
 /**
+ * Get the correct draggable element
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.2
+ * @version  0.1.2
+ *
+ * @param    {Object}   pos
+ */
+Node.setMethod(function dragStart(pos, event) {
+
+	if (event) {
+		// Do not let the inputs in the "buttons_element" be a drag handle
+		if (this.buttons_element.contains(event.target)) {
+			return false;
+		}
+	}
+
+	return this;
+});
+
+/**
  * Load incoming connections
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
