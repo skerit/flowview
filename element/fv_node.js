@@ -274,7 +274,7 @@ Node.setMethod(async function loadConfig(config) {
 		await this.waitForTasks();
 	}
 
-	if (this.type) {
+	if (this.type && this.grid) {
 		let list_entry = this.grid.getListEntry(this.type);
 		this.list_entry = list_entry;
 	} else {
@@ -328,8 +328,8 @@ Node.setMethod(async function loadConfig(config) {
  * Show buttons
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
- * @since    0.3.0
- * @version  0.3.0
+ * @since    0.1.1
+ * @version  0.1.1
  *
  * @param    {Object[]}   buttons
  */
@@ -420,14 +420,19 @@ Node.setMethod(function dragStart(pos, event) {
  * Load incoming connections
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
- * @since    0.3.0
- * @version  0.3.0
+ * @since    0.1.1
+ * @version  0.1.2
  *
  * @param    {Object[]}   connections
  */
 Node.setMethod(function loadIncomingConnections(connections) {
 
 	if (!connections) {
+		return;
+	}
+
+	if (!this.grid) {
+		console.warn('Unable to load incoming connections, grid is not available yet. Node:', this);
 		return;
 	}
 
@@ -447,8 +452,8 @@ Node.setMethod(function loadIncomingConnections(connections) {
  * Load outgoing connections
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
- * @since    0.3.0
- * @version  0.3.0
+ * @since    0.1.1
+ * @version  0.1.1
  *
  * @param    {Object[]}   connections
  */
