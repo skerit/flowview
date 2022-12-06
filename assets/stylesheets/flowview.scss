@@ -184,18 +184,20 @@ fv-list {
 	display: flex;
 	background-color: #333;
 	min-width: 22rem;
-	min-height: 10rem;
+	min-height: 60rem;
 
 	.components {
 		display: flex;
 		flex-flow: column;
+		overflow-y: scroll;
+		max-height: 60rem;
 	}
 }
 
 fv-list-entry {
-	min-height: 2rem;
 	display: flex;
 	padding: 1rem;
+	padding-top: 1.2rem;
 	color: white;
 	width: 100%;
 	border-bottom: 1px solid gray;
@@ -213,6 +215,22 @@ fv-list-entry {
 		justify-content: center;
 		flex-flow: column;
 		margin-right: 1rem;
+	}
+
+	.title {
+		font-size: 1.1rem;
+		font-weight: bold;
+		color: gold;
+	}
+
+	.description {
+		font-size: 0.9rem;
+		max-width: 11rem;
+		color: gray;
+
+		&:not(:empty) {
+			margin-top: 0.3rem;
+		}
 	}
 }
 

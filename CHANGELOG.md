@@ -1,6 +1,7 @@
 ## 0.1.2 (WIP)
 
 * Stop nodes being draggably by their "buttons" contents
+* Adjust the style of the sidebar
 
 ## 0.1.1 (2022-05-31)
 
