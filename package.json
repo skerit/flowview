@@ -1,9 +1,9 @@
 {
 	"name": "@11ways/flowview",
 	"description": "Diagram library",
-	"version": "0.1.2-alpha",
+	"version": "0.1.2",
 	"dependencies": {
-		"protoblast"   : "~0.7.0"
+		"protoblast"   : "~0.8.10"
 	},
 	"engines": {
 		"node": ">=14.0.0"
