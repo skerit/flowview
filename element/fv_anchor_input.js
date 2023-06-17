@@ -167,13 +167,17 @@ AnchorInput.setMethod(function dragStart(pos) {
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.1.0
- * @version  0.1.0
+ * @version  0.1.2
  */
 AnchorInput.setMethod(function redraw() {
 
 	let rect = this.getAttachmentPoint(),
 	    path,
 	    i;
+
+	if (!rect) {
+		return false;
+	}
 
 	for (i = 0; i < this.paths.length; i++) {
 		path = this.paths[i];
@@ -182,6 +186,8 @@ AnchorInput.setMethod(function redraw() {
 		path.dy = rect.y;
 		path.redraw();
 	}
+
+	return true;
 });
 
 /**

@@ -240,7 +240,7 @@ Node.setProperty(function value() {
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.1.0
- * @version  0.1.1
+ * @version  0.2.0
  *
  * @param    {String}   name
  */
@@ -272,6 +272,25 @@ Node.setMethod(async function loadConfig(config) {
 
 	if (!this.grid) {
 		await this.waitForTasks();
+	}
+
+	if (!this.grid) {
+		
+		let found_grid = false,
+		    retry = 1;
+
+		while (!found_grid) {
+			await Pledge.after(50 * retry);
+			retry++;
+
+			if (!this.isConnected) {
+				return;
+			}
+
+			if (retry > 10) {
+				throw new Error('Unable to find grid');
+			}
+		}
 	}
 
 	if (this.type && this.grid) {
@@ -460,6 +479,10 @@ Node.setMethod(function loadIncomingConnections(connections) {
 Node.setMethod(function loadOutgoingConnections(connections) {
 
 	if (!connections) {
+		return;
+	}
+
+	if (!this.grid) {
 		return;
 	}
 
